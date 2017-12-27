@@ -1,0 +1,63 @@
+function [ frameRGB ] = ycrcb2ccir(  frameY, frameCr, frameCb )
+%YCRCB2CCIR Reconstructs the input in RGB CCIR601 with resolution 720x576
+%   2-D.8.2 in MPEG video documentation
+
+disp('Hello from ycrcb2ccir function\n');
+
+%% Initialization
+% Input size:
+% frameY: 360x288
+%frameCr, frameCb: 180x144
+% output must be of size: 720x576x3
+
+frameRGB = uint8(zeros(720, 576, 3));
+
+frameY = double(frameY);
+
+lum_upsampling_filter = [-12, 0, 140, 256, 140, 0, -12];
+chr_upsampling_filter = [1, 3, 3, 1];
+
+%% Vertical Upsampling Filter for chrominance SIF
+frameCr = upsample(frameCr, 2);
+frameCb = upsample(frameCb, 2);
+
+%% Horizontal Upsampling Filter
+frameY = upsamplematrix(frameY, 2, 2);
+frameCr = upsamplematrix(frameCr, 2, 2);
+frameCb = upsamplematrix(frameCb, 2, 2);
+
+%% Vertical Upsampling Filter
+frameY = upsample(frameY, 2);
+frameCr = upsample(frameCr, 2);
+frameCb = upsample(frameCb, 2);
+size(frameY, 1)
+%% Convert the YCrCb to RGB
+% 
+% for h = 1 : size(frameY, 2) % height
+%     for w = 1 : size(frameY, 1) % width
+%         frameY(h, w) = 0.2989 * R(h,w) + 0.5866 * G(h,w) + 0.1145 * B(h,w);
+%         if (mod(w, 2) ~= 0)
+%             frameCr(h, ceil(w/2)) = 0.5 * R(h,w) - 0.4184 * G(h,w) - 0.0816 * B(h,w);
+%             frameCb(h, ceil(w/2)) = - 0.1687 * R(h,w) - 0.3313 * G(h,w) + 0.5 * B(h,w);
+%         end
+%     end
+% end
+% 
+% 
+% R = frameY + 1.4022 * frameCr;
+% G = frameY -0.3456 * frameCb - 0.7145 * frameCr;
+% B = frameY + 1.7710 * frameCb;
+% 
+% R = R * 255;
+% G = G * 255;
+% B = B * 255;
+% 
+% frameRGB(:,:,1) = R;
+% frameRGB(:,:,2) = G;
+% frameRGB(:,:,3) = B;
+
+
+%% Testing and ploting - Hope it works
+
+whos
+frameRGB = 0;
