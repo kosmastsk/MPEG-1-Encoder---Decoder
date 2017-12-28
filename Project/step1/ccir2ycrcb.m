@@ -1,6 +1,6 @@
 function [ frameY, frameCr, frameCb ] = ccir2ycrcb( frameRGB )
 %CCIR2YCRCB Create a sequence of images 352x288 in YCrCb 4:2:0
-%   2-D.3.1 in MPEG video documentation
+%   2-D.3.1 in MPEG video documentation (p. 57)
 
 disp('Hello from ccir2ycrrb function\n');
 %% Initialize
@@ -76,40 +76,43 @@ frameCb = downsample(frameCb, 2);
 
 %% Luminance Subsampling Filter Tap Weights
 lum_tap_weights = [-29, 0, 88, 138, 88, 0, -29];
-lum_tap_weights = lum_tap_weights / 255;
+lum_tap_weights = lum_tap_weights / 256;
 
 %% Chrominance Subsampling Filter Tap Weights
 chr_tap_weights = [1, 3, 3, 1];
-chr_tap_weights = chr_tap_weights / 255;
+chr_tap_weights = chr_tap_weights / 8;
 
 %% Horizontal Filter and subsample
-frameY = imfilter(frameY, lum_tap_weights);
-frameCr = imfilter(frameCr, chr_tap_weights);
-frameCb = imfilter(frameCb, chr_tap_weights);
+
 frameY = frameY(: , 1:2:end);
 frameCr = frameCr(: , 1:2:end);
 frameCb = frameCb(: , 1:2:end);
 
+frameY = imfilter(frameY', lum_tap_weights); % transpose to apply the filter horizontally
+frameCr = imfilter(frameCr', chr_tap_weights);
+frameCb = imfilter(frameCb', chr_tap_weights);
+
 %% Vertical Filter and subsample for frames Cr and Cb
+frameCr = downsample(frameCr', 2); % transpose again to bring it in the initial format
+frameCb = downsample(frameCb', 2);
+
 frameCr = imfilter(frameCr, chr_tap_weights);
 frameCb = imfilter(frameCb, chr_tap_weights);
-frameCr = downsample(frameCr, 2);
-frameCb = downsample(frameCb, 2);
 
 %% Hopefully SIF resolution is done
 
 %% Plots and testing
-figure;
-imshow(frameY);
-title('frame Y');
-
-figure;
-imshow(frameCr);
-title('frame Cr');
-
-figure;
-imshow(frameCb);
-title('frame Cb');
+% figure;
+% imshow(frameY');
+% title('frame Y');
+% 
+% figure;
+% imshow(frameCr);
+% title('frame Cr');
+% 
+% figure;
+% imshow(frameCb);
+% title('frame Cb');
 
 % figure;
 % imshow(cat(3, frameY, frameCr, frameCb));
