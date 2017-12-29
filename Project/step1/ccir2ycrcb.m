@@ -30,6 +30,7 @@ frameCb = uint8(zeros(size(frameY(:,:),1), size(frameY(:,:),2) / 2));
 %% Wikipedia numbers
 for h = 1 : size(frameRGB, 1) % height
     for w = 1 : size(frameRGB, 2) % width
+        % formulas from wikipedia
         frameY(h, w) = 16 + 65.481 * R(h,w) + 128.553 * G(h,w) + 24.966 * B(h,w);
         if (mod(w, 2) ~= 0)
             frameCb(h, ceil(w/2)) = 128 - 37.797 * R(h,w) - 74.203 * G(h,w) + 112.0 * B(h,w);
@@ -76,34 +77,40 @@ frameCb = downsample(frameCb, 2);
 
 %% Luminance Subsampling Filter Tap Weights
 lum_tap_weights = [-29, 0, 88, 138, 88, 0, -29];
-lum_tap_weights = lum_tap_weights / 256;
+lum_tap_weights = (lum_tap_weights / 256);
 
 %% Chrominance Subsampling Filter Tap Weights
 chr_tap_weights = [1, 3, 3, 1];
-chr_tap_weights = chr_tap_weights / 8;
+chr_tap_weights = (chr_tap_weights / 8);
 
 %% Horizontal Filter and subsample
-
-frameY = frameY(: , 1:2:end);
-frameCr = frameCr(: , 1:2:end);
-frameCb = frameCb(: , 1:2:end);
 
 frameY = imfilter(frameY', lum_tap_weights); % transpose to apply the filter horizontally
 frameCr = imfilter(frameCr', chr_tap_weights);
 frameCb = imfilter(frameCb', chr_tap_weights);
 
-%% Vertical Filter and subsample for frames Cr and Cb
-frameCr = downsample(frameCr', 2); % transpose again to bring it in the initial format
-frameCb = downsample(frameCb', 2);
+frameY = downsample(frameY, 2);
+frameCr = downsample(frameCr, 2);
+frameCb = downsample(frameCb, 2);
 
-frameCr = imfilter(frameCr, chr_tap_weights);
-frameCb = imfilter(frameCb, chr_tap_weights);
+% frameY = frameY(: , 1:2:end);
+% frameCr = frameCr(: , 1:2:end);
+% frameCb = frameCb(: , 1:2:end);
+
+%% Vertical Filter and subsample for frames Cr and Cb
+
+frameCr = imfilter(frameCr', chr_tap_weights);
+frameCb = imfilter(frameCb', chr_tap_weights);
+
+frameCr = downsample(frameCr, 2); % transpose again to bring it in the initial format
+frameCb = downsample(frameCb, 2);
+frameY = frameY';
 
 %% Hopefully SIF resolution is done
 
 %% Plots and testing
 % figure;
-% imshow(frameY');
+% imshow(frameY);
 % title('frame Y');
 % 
 % figure;

@@ -9,4 +9,7 @@ function [eMBY, eMBCr, eMBCb, mV] = motEstP(frameY, frameCr, frameCb, mBIndex, r
 % mBIndex: index number of the macroblock
 % refFrameY, refFrameCr, refFrameCb: channels for reference frames
 
+ disp('Hello from motEstP');
  
+ % Set the distance for searching
+ W = 14

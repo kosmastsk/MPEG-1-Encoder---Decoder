@@ -1,8 +1,0 @@
-function [eMBY, eMBCr, eMBCb, mV] = motEstP(frameY, frameCr, frameCb, mBIndex, refFrameY, refFrameCr, refFrameCb)
-%MOTESTP estimates the move for P-frames
-% eMBY: 16x16 macroblock of estimation error -- luminance
-% eMBCr, eMBCb: 8x8 macroblock of estimation error -- chroma
-% mV: Motion vectors for the specific macroblocks. 2x2 array. For P-frames
-% the 2nd column in NaN
-% frameY, frameCr, frameCb: channels of the current P-frame
-5 

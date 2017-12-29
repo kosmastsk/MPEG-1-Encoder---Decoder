@@ -20,10 +20,10 @@ frameCr = double(frameCr);
 frameCb = double(frameCb);
 
 lum_upsampling_weights = [-12, 0, 140, 256, 140, 0, -12];
-lum_upsampling_weights = lum_upsampling_weights / 256;
+lum_upsampling_weights = (lum_upsampling_weights / 256);
  
 chr_upsampling_weights = [1, 3, 3, 1];
-chr_upsampling_weights = chr_upsampling_weights / 4;
+chr_upsampling_weights = (chr_upsampling_weights / 4);
 
 %% Vertical Upsampling Filter for chrominance SIF
 
@@ -39,13 +39,13 @@ frameY = upsample(frameY', 2); % transpose the matrix to use the same function b
 frameCr = upsample(frameCr', 2);
 frameCb = upsample(frameCb', 2);
 
-% frameY = upsamplematrix(frameY, 2, 2);
-% frameCr = upsamplematrix(frameCr, 2, 2);
-% frameCb = upsamplematrix(frameCb, 2, 2);
-% 
 frameY = filter(lum_upsampling_weights, 1, frameY); % apply the filter vertically in every row, since we have transposed it
 frameCr = filter(chr_upsampling_weights, 1, frameCr); 
 frameCb = filter(chr_upsampling_weights, 1, frameCb);
+
+% frameY = upsamplematrix(frameY, 2, 2);
+% frameCr = upsamplematrix(frameCr, 2, 2);
+% frameCb = upsamplematrix(frameCb, 2, 2);
 
 %% Vertical Upsampling Filter
 
@@ -57,12 +57,11 @@ frameY = filter(lum_upsampling_weights, 1, frameY); % apply the filter verticall
 frameCr = filter(chr_upsampling_weights, 1, frameCr); 
 frameCb = filter(chr_upsampling_weights, 1, frameCb);
 
-% We not have the dimension we need for YCrCb
-
 %% Convert the YCrCb to RGB
 
 for h = 1 : size(frameY, 1) % height
     for w = 1 : size(frameY, 2) % width
+        % formulas from wikipedia
         R(h, w) = (255/219) * (frameY(h, w) - 16) + (255/112) * 0.701 * (frameCr(h, ceil(w/2)) - 128);
         G(h, w) = (255/219) * (frameY(h, w) - 16) - (255/112) * 0.886 * (0.114/0.587) * (frameCb(h, ceil(w/2)) - 128) - (255/112) * 0.701 * (0.299/0.587) * (frameCr(h, ceil(w/2)) - 128);
         B(h, w) = (255/219) * (frameY(h, w) - 16) + (255/112) * 0.886 * (frameCb(h, ceil(w/2)) - 128);
@@ -79,14 +78,14 @@ frameRGB(:,:,3) = B;
 
 %% Testing and ploting - Hope it works
 
-imshow(R);
-figure;
-imshow(G);
-figure;
-imshow(B);
-
-figure;
-imshow(frameRGB)
+% imshow(R);
+% figure;
+% imshow(G);
+% figure;
+% imshow(B);
+% 
+% figure;
+% imshow(frameRGB)
 % 
 % 
 % whos

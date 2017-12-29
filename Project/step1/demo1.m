@@ -23,7 +23,7 @@ images = dir(filePattern);
 
 %% Preprocessing
 % Read every image in the folder specified
-% for k = 1 : length(images) % Change to 1 if we want to run for one image
+% for k = 1 : 1% length(images) % Change to 1 if we want to run for one image
 %     baseFileName = images(k).name;
 %     fullFileName = fullfile(myFolder, baseFileName);
 %     fprintf(1, 'Now reading %s\n', fullFileName);
@@ -37,18 +37,55 @@ images = dir(filePattern);
 %    
 %     % Inverse function
 %     frameRGB = ycrcb2ccir(frameY, frameCr, frameCb);
+%     figure;
 %     imshow(frameRGB);
 % end
 
 %% Motion Estimator
-% Read every image in the folder specified
-for k = 1 : 1 %length(images)
-    baseFileName = images(k).name;
-    fullFileName = fullfile(myFolder, baseFileName);
+
+fullFileName = fullfile(myFolder, baseFileName);
     fprintf(1, 'Now reading %s\n', fullFileName);
     image = imread(fullFileName);
     
+% Read the image in which to apply motion estimation "coastguard003.tiff"
+baseFileName = images(4).name;
+fullFileName = fullfile(myFolder, baseFileName);
+fprintf(1, 'Now reading %s\n', fullFileName);
+image = imread(fullFileName);
+% Convert the image to YCrCb
+[frameY, frameCr, frameCb] = ccir2ycrcb(image);
+
+% Read the reference image "coastguard001.tiff"
+baseFileName = images(2).name;
+fullFileName = fullfile(myFolder, baseFileName);
+fprintf(1, 'Now reading %s\n', fullFileName);
+refImage = imread(fullFileName);
+% Convert the image to YCrCb
+[refFrameY, refFrameCr, refFrameCb] = ccir2ycrcb(refImage);
+
+% frameY now is 360 pixels wide, but we need 352 to apply a 16x16
+% macroblock size, so we need to delete 4 pixels in each side right and left. The same for the chroma
+% frames, 2 pixels in each side
+frameY(:, 1:4) = 0;
+frameY(:, 357:360) = 0;
+
+frameCr(:, 1:2) = 0;
+frameCr(:, 179:180) = 0;
     
+% The number of 16x16 macroblocks that can fit our image
+max_mBIndex = floor(size(frameY, 1) / 16) * floor(size(frameY, 2) / 16);
+
+% I need to find the minimum error and keep its mactoblock's position
+eMBY_min = 100;
+mV_opt = [0 0; 0 0]
+
+for mBIndex = 1 : max_mBIndex
+    % motion estimation
+    [eMBY, eMBCr, eMBCb, mV] = motEstP(frameY, frameCr, frameCb, mBIndex, refFrameY, refFrameCr, refFrameCb);
+    if (eMBY < eMBY_min)
+        eMBY_min = eMBY;
+        mV_opt = mV;
+    end
 end
 
 %%  END 
