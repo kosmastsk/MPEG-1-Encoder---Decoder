@@ -9,7 +9,102 @@ function [eMBY, eMBCr, eMBCb, mV] = motEstP(frameY, frameCr, frameCb, mBIndex, r
 % mBIndex: index number of the macroblock
 % refFrameY, refFrameCr, refFrameCb: channels for reference frames
 
- disp('Hello from motEstP');
- 
- % Set the distance for searching
- W = 14
+% disp('Hello from motEstP');
+
+%% WE ONLY CONSIDER THE LUMINANCE VALUES
+%% Initialization
+
+MBYSize = 16; % Mactoblock size for Y frame
+MBCSize = 8; % Mactoblock size for chroma frames
+w = 2; % Search parameter 
+[numberOfRows, numberOfCols] = size(frameY);
+
+% array to save the cost from each macroblock we check
+% later on we will find the minimum of it
+costs = ones(2*w + 1, 2*w +1) * 99999;
+
+% output arguments
+mV = [NaN NaN; NaN NaN]; 
+% eMBY = zeros(MBYSize, MBYSize);
+% eMBCr = zeros(MBCSize, MBCSize);
+% eMBCb = zeros(MBCSize, MBCSize);
+
+%% Since we have the MB index, we need to calculate where it is in the frame
+% Calculate the indexing in rows and columns inside the frame of the macroblock
+
+h = fix(mBIndex / (numberOfCols / 16)); % find the row
+c = mod(mBIndex, numberOfCols / 16) ; % find the column
+
+% Translate the row and column into actual pixel index values from the original frame
+% MBY = zeros(MBYSize, MBYSize);
+frameRow = h*MBYSize + 1 : h*MBYSize + MBYSize;
+frameCol = c*MBYSize + 1 : c*MBYSize + MBYSize;
+
+frameRowChr = h*MBCSize + 1 : h*MBCSize + MBCSize;
+frameColChr = c*MBCSize + 1 : c*MBCSize + MBCSize;
+
+MBY = frameY(frameRow , frameCol); % Extract only the macroblock we care for, from the original frame
+MBCr = frameCr(frameRowChr, frameColChr); % Get the chroma pels to calculate the error later
+MBCb = frameCb(frameRowChr, frameColChr);
+
+% If we didn't have the index, the loop would be like this -->
+% for h = 1 : MBSize : numberOfRows-MBSize+1 % height
+%     for w = 1 : MBSize : numberOfCols-MBSize+1 % width
+%       ...
+%     end
+% end
+
+%% We are using exhaustive search. This means that we will calculate the error from 2w+1 blocks in each direction
+
+% we will evaluate cost for  (2w + 1) blocks vertically and (2w + 1) blocks horizontaly
+% m is row(vertical) index
+% n is col(horizontal) index
+% this means we are scanning in raster order
+
+for m = -w : w
+    for n = -w : w
+        refBlkVer = frameRow(1) + m; % vertical co-ordinate for reference block
+        refBlkHor = frameCol(1) + n; % Horizontal co-ordinate for reference block
+        
+        % skip the pels that are on the side and do not have the necessary amount of pels around to check
+        if (refBlkVer < 1 || refBlkVer+MBYSize-1 > numberOfRows || refBlkHor < 1 || refBlkHor+MBYSize-1 > numberOfCols);
+            continue;
+        end
+        % Calculate the cost using the Mean Absolute Difference (MAD)
+        costs(m+w+1, n+w+1) = costFunction(MBY, refFrameY(refBlkVer:refBlkVer+MBYSize-1, refBlkHor:refBlkHor+MBYSize-1), MBYSize);
+    end
+end
+
+% Find the place with the min cost
+minCost = 99999;
+for k = 1 : 2*w + 1
+    for l = 1 : 2*w + 1
+        if (costs(k, l) < minCost) % Attempted to access costs(1,38); index out of bounds because size(costs)=[41,37].
+            minCost = costs(k, l);
+            minX = l;
+            minY = k;
+        end
+    end
+end
+
+% Set the motion Vector and the error that will be encoded and returned
+mV(: , 1) = [minY - w - 1, minX - w - 1];
+
+% E = MBY - macroblock withe min cost;
+% If it tries to attempt a pel which is less than 1, it uses 1, so that it
+% keeps in bounds
+
+% Chroma indexes
+chroma_row = frameRowChr + minY - fix(w/2) - 1
+chroma_col = frameColChr + minX - fix(w/2) - 1
+
+% keep them inside the picture size
+chroma_row(chroma_row > 144) = 144;
+chroma_row(chroma_row < 1) = 1;
+
+chroma_col(chroma_col > 176) = 176;
+chroma_col(chroma_col < 1) = 1;
+
+eMBY = MBY - refFrameY(max(1, frameRow + minY - w - 1), max(1, frameCol + minX - w - 1));
+eMBCr = MBCr - refFrameCr(chroma_row, chroma_col);
+eMBCb = MBCb - refFrameCb(chroma_row, chroma_col);

@@ -42,10 +42,6 @@ images = dir(filePattern);
 % end
 
 %% Motion Estimator
-
-fullFileName = fullfile(myFolder, baseFileName);
-    fprintf(1, 'Now reading %s\n', fullFileName);
-    image = imread(fullFileName);
     
 % Read the image in which to apply motion estimation "coastguard003.tiff"
 baseFileName = images(4).name;
@@ -66,26 +62,24 @@ refImage = imread(fullFileName);
 % frameY now is 360 pixels wide, but we need 352 to apply a 16x16
 % macroblock size, so we need to delete 4 pixels in each side right and left. The same for the chroma
 % frames, 2 pixels in each side
-frameY(:, 1:4) = 0;
-frameY(:, 357:360) = 0;
+% frameY(:, 1:4) = 0;
+% frameY(:, 357:360) = 0;
+frameY = frameY(:, 5:356);
 
-frameCr(:, 1:2) = 0;
-frameCr(:, 179:180) = 0;
-    
+% frameCr(:, 1:2) = 0;
+% frameCr(:, 179:180) = 0;
+frameCr = frameCr(:, 3:178);
+
+% frameCb(:, 1:2) = 0;
+% frameCb(:, 179:180) = 0;
+frameCb = frameCb(:, 3:178);
+  
 % The number of 16x16 macroblocks that can fit our image
 max_mBIndex = floor(size(frameY, 1) / 16) * floor(size(frameY, 2) / 16);
 
-% I need to find the minimum error and keep its mactoblock's position
-eMBY_min = 100;
-mV_opt = [0 0; 0 0]
-
-for mBIndex = 1 : max_mBIndex
+for mBIndex = 0 : max_mBIndex - 1 % minus 1 since we start counting from zero
     % motion estimation
-    [eMBY, eMBCr, eMBCb, mV] = motEstP(frameY, frameCr, frameCb, mBIndex, refFrameY, refFrameCr, refFrameCb);
-    if (eMBY < eMBY_min)
-        eMBY_min = eMBY;
-        mV_opt = mV;
-    end
+    [eMBY, eMBCr, eMBCb, mV] = motEstP(frameY, frameCr, frameCb, mBIndex, refFrameY, refFrameCr, refFrameCb)
 end
 
 %%  END 
