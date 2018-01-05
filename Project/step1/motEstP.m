@@ -14,8 +14,8 @@ function [eMBY, eMBCr, eMBCb, mV] = motEstP(frameY, frameCr, frameCb, mBIndex, r
 %% WE ONLY CONSIDER THE LUMINANCE VALUES
 %% Initialization
 
-MBYSize = 16; % Mactoblock size for Y frame
-MBCSize = 8; % Mactoblock size for chroma frames
+MBYSize = 16; % Macroblock size for Y channels
+MBCSize = 8; % Macroblock size for chroma channels
 w = 2; % Search parameter 
 [numberOfRows, numberOfCols] = size(frameY);
 
@@ -95,14 +95,14 @@ mV(: , 1) = [minY - w - 1, minX - w - 1];
 % keeps in bounds
 
 % Chroma indexes
-chroma_row = frameRowChr + minY - fix(w/2) - 1
-chroma_col = frameColChr + minX - fix(w/2) - 1
+chroma_row = frameRowChr + minY - fix(w/2) - 1;
+chroma_col = frameColChr + minX - fix(w/2) - 1;
 
 % keep them inside the picture size
-chroma_row(chroma_row > 144) = 144;
+chroma_row(chroma_row > numberOfRows / 2) = numberOfRows / 2;
 chroma_row(chroma_row < 1) = 1;
 
-chroma_col(chroma_col > 176) = 176;
+chroma_col(chroma_col > numberOfCols / 2) = numberOfCols / 2;
 chroma_col(chroma_col < 1) = 1;
 
 eMBY = MBY - refFrameY(max(1, frameRow + minY - w - 1), max(1, frameCol + minX - w - 1));

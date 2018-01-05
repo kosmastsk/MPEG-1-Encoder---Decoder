@@ -79,7 +79,10 @@ max_mBIndex = floor(size(frameY, 1) / 16) * floor(size(frameY, 2) / 16);
 
 for mBIndex = 0 : max_mBIndex - 1 % minus 1 since we start counting from zero
     % motion estimation
-    [eMBY, eMBCr, eMBCb, mV] = motEstP(frameY, frameCr, frameCb, mBIndex, refFrameY, refFrameCr, refFrameCb)
+    [eMBY, eMBCr, eMBCb, mV] = motEstP(frameY, frameCr, frameCb, mBIndex, refFrameY, refFrameCr, refFrameCb);
+    
+    % Inverse motion estimation
+    [mBY, mBCr, mBCb] = iMotEstP(eMBY, eMBCr, eMBCb, mBIndex, mV, refFrameY, refFrameCr, refFrameCb);
 end
 
 %%  END 
