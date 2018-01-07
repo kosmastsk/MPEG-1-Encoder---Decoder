@@ -13,43 +13,84 @@ G = frameRGB(:,:,2) ; % Green channel
 B = frameRGB(:,:,3) ; % Blue channel
 
 % initialize the output arrays in uint8 format
-frameY = uint8(zeros(size(frameRGB(:,:,1))));
-frameCr = uint8(zeros(size(frameY(:,:),1), size(frameY(:,:),2) / 2)); %the Cr Cb frames have the half number of pixels per row
-frameCb = uint8(zeros(size(frameY(:,:),1), size(frameY(:,:),2) / 2));
+% frameY = uint8(zeros(size(frameRGB(:,:,1))));
+% frameCr = uint8(zeros(size(frameY(:,:),1), size(frameY(:,:),2) / 2)); %the Cr Cb frames have the half number of pixels per row
+% frameCb = uint8(zeros(size(frameY(:,:),1), size(frameY(:,:),2) / 2));
 
 
 %% Convert the values from RGB to YCrCb pixels
+% http://www.bilsen.com/aic/colorconversion.shtml
+% for h = 1 : size(frameRGB, 1) % height
+%     for w = 1 : size(frameRGB, 2) % width
+%         frameY(h, w) = 0.2989 * R(h,w) + 0.5866 * G(h,w) + 0.1145 * B(h,w);
+%         if (mod(w, 2) ~= 0)
+%             frameCr(h, ceil(w/2)) = 0.5 * R(h,w) - 0.4184 * G(h,w) - 0.0816 * B(h,w);
+%             frameCb(h, ceil(w/2)) = - 0.1687 * R(h,w) - 0.3313 * G(h,w) + 0.5 * B(h,w);
+%         end
+%     end
+% end
+%% Wikipedia numbers
+% for h = 1 : size(frameRGB, 1) % height
+%     for w = 1 : size(frameRGB, 2) % width
+%         % formulas from wikipedia
+%         frameY(h, w) = 16 + 65.481 * R(h,w) + 128.553 * G(h,w) + 24.966 * B(h,w);
+%         if (mod(w, 2) ~= 0)
+%             frameCb(h, ceil(w/2)) = 128 - 37.797 * R(h,w) - 74.203 * G(h,w) + 112.0 * B(h,w);
+%             frameCr(h, ceil(w/2)) = 128 + 112.0 * R(h,w) - 93.786 * G(h,w) - 18.214 * B(h,w);
+%         end
+%     end
+% end
+% 
+% ycbcr = rgb2ycbcr(frameRGB);
+% frameY=ycbcr(:,:,1);
+% frameCb=ycbcr(:,:,2);
+% frameCr=ycbcr(:,:,3);
 
 frameY = uint8(floor(77*R + 150*G + 29*B));
-frameCb = uint8(floor(((-44*R(:, 1:2:end) - 87*G(:, 1:2:end) + 131*B(:, 1:2:end))/256 + 0.5)*256));
-frameCr = uint8(floor(((131*R(:, 1:2:end) - 110*G(:, 1:2:end) - 21*B(:, 1:2:end))/256 + 0.5)*256));
+frameCb = uint8(floor(((-44*R - 87*G  + 131*B)/256 + 0.5)*256));
+frameCr= uint8(floor(((131*R - 110*G - 21*B)/256 + 0.5)*256));
 
-% See the result of the initial convertion
-% figure;
-% imshow(frameY);
-% title('frame Y');
-% 
-% figure;
-% imshow(frameCr);
-% title('frame Cr');
-% 
-% figure;
-% imshow(frameCb);
-% title('frame Cb');
+figure;
+imshow(frameY);
+title('frame Y');
+
+figure;
+imshow(frameCr);
+title('frame Cr');
+
+figure;
+imshow(frameCb);
+title('frame Cb');
 
 %% Odd field only
+% n_h = 1; % new height
+% Reject all the even rows
+% for h = 1 : 2: size(frameRGB, 1)
+%     frameY(n_h, :) = frameY(h, :);
+%     frameCr(n_h, :) = frameCr(h, :);
+%     frameCb(n_h, :) = frameCb(h, :);
+%     n_h = n_h + 1;
+% end
+% % Set to 0 the rest of the rows, so that we can remove them
+% for n_h = n_h : size(frameRGB, 1)
+%     frameY(n_h, :) = 0;
+%     frameCr(n_h, :) = 0;
+%     frameCb(n_h, :) = 0;
+% end
+% frameY = frameY(any(frameY, 2),:);
+% frameCb = frameCb(any(frameCb, 2),:);
+% frameCr = frameCr(any(frameCr, 2),:);
 
+% There was such an easier way :/ 
 frameY = downsample(frameY, 2);
 frameCr = downsample(frameCr, 2);
 frameCb = downsample(frameCb, 2);
 
 %% Luminance Subsampling Filter Tap Weights
-
 lum_tap_weights = [-29, 0, 88, 138, 88, 0, -29];
 lum_tap_weights = (lum_tap_weights / 256);
 
 %% Chrominance Subsampling Filter Tap Weights
-
 chr_tap_weights = [1, 3, 3, 1];
 chr_tap_weights = (chr_tap_weights / 8);
 

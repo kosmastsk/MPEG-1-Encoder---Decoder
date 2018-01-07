@@ -23,15 +23,24 @@ lum_upsampling_weights = [-12, 0, 140, 256, 140, 0, -12];
 lum_upsampling_weights = (lum_upsampling_weights / 256);
  
 chr_upsampling_weights = [1, 3, 3, 1];
-chr_upsampling_weights = (chr_upsampling_weights / 4);
+chr_upsampling_weights = (chr_upsampling_weights / 4    );
 
 %% Vertical Upsampling Filter for chrominance SIF
 
 frameCr = upsample(frameCr, 2);
 frameCb = upsample(frameCb, 2);
 
-frameCr = filter(chr_upsampling_weights, 1, frameCr); % apply the filter vertically in every column
-frameCb = filter(chr_upsampling_weights, 1, frameCb);
+% frameCr = filter(chr_upsampling_weights, 1, frameCr); % apply the filter vertically in every column
+% frameCb = filter(chr_upsampling_weights, 1, frameCb);
+
+frameCr = imfilter(frameCr, chr_upsampling_weights); % apply the filter vertically in every column
+frameCb = imfilter(frameCb, chr_upsampling_weights);
+
+% imshow(frameY);
+% figure;
+% imshow(frameCr);
+% figure;
+% imshow(frameCb);
 
 %% Horizontal Upsampling Filter
 
@@ -39,9 +48,20 @@ frameY = upsample(frameY', 2); % transpose the matrix to use the same function b
 frameCr = upsample(frameCr', 2);
 frameCb = upsample(frameCb', 2);
 
-frameY = filter(lum_upsampling_weights, 1, frameY); % apply the filter vertically in every row, since we have transposed it
-frameCr = filter(chr_upsampling_weights, 1, frameCr); 
-frameCb = filter(chr_upsampling_weights, 1, frameCb);
+% frameY = filter(lum_upsampling_weights, 1, frameY); % apply the filter vertically in every row, since we have transposed it
+% frameCr = filter(chr_upsampling_weights, 1, frameCr); 
+% frameCb = filter(chr_upsampling_weights, 1, frameCb);
+
+frameY = imfilter(frameY, lum_upsampling_weights); % apply the filter vertically in every row, since we have transposed it
+frameCr = imfilter(frameCr, chr_upsampling_weights); 
+frameCb = imfilter(frameCb, chr_upsampling_weights);
+% 
+% imshow(frameY);
+% figure;
+% imshow(frameCr);
+% figure;
+% imshow(frameCb);
+
 
 % frameY = upsamplematrix(frameY, 2, 2);
 % frameCr = upsamplematrix(frameCr, 2, 2);
@@ -53,12 +73,23 @@ frameY = upsample(frameY', 2); % transpose the matrix again to make it the same 
 frameCr = upsample(frameCr', 2);
 frameCb = upsample(frameCb', 2);
 
-frameY = filter(lum_upsampling_weights, 1, frameY); % apply the filter vertically in every column
-frameCr = filter(chr_upsampling_weights, 1, frameCr); 
-frameCb = filter(chr_upsampling_weights, 1, frameCb);
+% frameY = filter(lum_upsampling_weights, 1, frameY); % apply the filter vertically in every column
+% frameCr = filter(chr_upsampling_weights, 1, frameCr); 
+% frameCb = filter(chr_upsampling_weights, 1, frameCb);
+
+frameY = imfilter(frameY, lum_upsampling_weights); % apply the filter vertically in every column
+frameCr = imfilter(frameCr, chr_upsampling_weights); 
+frameCb = imfilter(frameCb, chr_upsampling_weights);
+% 
+% imshow(frameY);
+% figure;
+% imshow(frameCr);
+% figure;
+% imshow(frameCb);
+
 
 %% Convert the YCrCb to RGB
-
+% 
 for h = 1 : size(frameY, 1) % height
     for w = 1 : size(frameY, 2) % width
         % formulas from wikipedia
@@ -71,21 +102,33 @@ end
 R = R * 255;
 G = G * 255;
 B = B * 255;
+% 
 
-frameRGB(:,:,1) = R;
+
+
+%   in  = im2double (in);
+%   R(:,1)      = (in(:,1) - 16/255) / (219/255);
+%     G(:,[2 3])  = (in(:,[2 3]) - 16/255) / (223/255);
+%     B(:,[2 3])  = (in(:,[2 3]) - 16/255) / (223/255);
+%     
+%     
+%     in(:,[2 3]) -= 0.5;
+%     %out          = (inv (cmat) * in')';
+% 
+    frameRGB(:,:,1) = R;
 frameRGB(:,:,2) = G;
 frameRGB(:,:,3) = B;
 
 %% Testing and ploting - Hope it works
 
-% imshow(R);
-% figure;
-% imshow(G);
-% figure;
-% imshow(B);
-% 
-% figure;
-% imshow(frameRGB)
+imshow(R);
+figure;
+imshow(G);
+figure;
+imshow(B);
+
+figure;
+imshow(frameRGB)
 % 
 % 
 % whos
