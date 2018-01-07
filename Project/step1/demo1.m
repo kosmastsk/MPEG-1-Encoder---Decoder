@@ -28,13 +28,13 @@ for k = 1 : 1% length(images) % Change to 1 if we want to run for one image
     fullFileName = fullfile(myFolder, baseFileName);
     fprintf(1, 'Now reading %s\n', fullFileName);
     image = imread(fullFileName);
-    figure;
-    imshow(image);
-    title('Original image');
+%     figure;
+%     imshow(image);
+%     title('Original image');
 
 %     Convert the image to YCrCb
     [frameY, frameCr, frameCb] = ccir2ycrcb(image);
-    
+
 %     dummy display: downsample frameY, so that we can display the image created with the
 %     cat function, and just take a look on our result
 %     frameY = frameY(1:2:end, 1:2:end);
@@ -42,11 +42,6 @@ for k = 1 : 1% length(images) % Change to 1 if we want to run for one image
    
 %     Inverse function
     frameRGB = ycrcb2ccir(frameY, frameCr, frameCb);
-%     figure;
-%     frameY = frameY(:,:);
-%     frameCr = upsample(frameCr, 2);
-%     frameCb = upsample(frameCb, 2);
-%     frameRGB = ycbcr2rgb(cat(3, frameY, frameCb, frameCr));
 %     imshow(frameRGB);
 end
 

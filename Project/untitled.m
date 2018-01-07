@@ -1,17 +1,8 @@
 %% Testing the filter function.
-% Did not get any good result
 
-line = [10, 12, 20, 30, 35, 15, 19, 11, 11, 19, 26, 45, 80, 90, 92, 90];
-filter1 = [-29, 0, 88, 138, 88, 0, -29];
-filter1 =  filter1  / 256;
+line = [12, 32, 23, 9, 12, 49, 95, 95];
 
-filter21 = [1, 3, 3, 1];
-filter21 = filter21 / 8;
+weights = [-12, 0, 140, 256, 140, 0, -12];
 
-%decimated_hor = downsample(result,2)
-% for i = 1 : length(line)
-%     result(i) = imfilter(line(i), filter1);
-% end
-result = imfilter(line, filter1);
-result = downsample(result, 2)
-true = [12, 32, 23, 9, 12, 49, 95, 95];
+interpFilter(line, weights)
+true = [10, 12, 22, 32, 29, 23, 15, 9, 8, 12, 28, 49, 74, 95, 97, 95];

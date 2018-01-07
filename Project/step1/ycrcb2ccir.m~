@@ -34,6 +34,12 @@ chr_upsampling_weights = [1, 0, 3, 8, 3, 0, 1];
 % Upsample the image with offset 1 to increase the size
 frameCr = upsample(frameCr, 2, 1);
 frameCb = upsample(frameCb, 2, 1);
+ 
+% % frameCr = filter(chr_upsampling_weights, 1, frameCr); % apply the filter vertically in every column
+% % frameCb = filter(chr_upsampling_weights, 1, frameCb);
+% 
+% frameCr = imfilter(frameCr, chr_upsampling_weights); % apply the filter vertically in every column
+% frameCb = imfilter(frameCb, chr_upsampling_weights);
 
 % Use interpolation to calculate the values of the zero pels that occured
 % with the upsampling
@@ -44,17 +50,14 @@ end
 
 % figure;
 % imshow(frameY);
-% title('frameY');
 % figure;
 % imshow(frameCr);
-% title('frameCr');
 % figure;
 % imshow(frameCb);
-% title('frameCb');
 
 %% Horizontal Upsampling Filter
-
-frameY = upsample(frameY', 2); % transpose the matrix to use the same function but upsample to the other direction
+frameY = frameY';
+frameY = upsample(frameY, 2); % transpose the matrix to use the same function but upsample to the other direction
 frameY = frameY'; % recover the matrix to the original state but upsampled properly
 
 % Same procedure for chromatic channels
@@ -72,15 +75,11 @@ for h = 1 : size(frameCr, 1)
     frameCb(h, :) = lumInterpFilter(frameCb(h, :), chr_upsampling_weights, 8);
 end
 
-% figure;
 % imshow(frameY);
-% title('frameY');
 % figure;
 % imshow(frameCr);
-% title('frameCr');
 % figure;
 % imshow(frameCb);
-% title('frameCb');
 
 %% Vertical Upsampling Filter
 
@@ -100,23 +99,16 @@ for w = 1 : size(frameCr, 2)
     frameCb(:, w) = lumInterpFilter(frameCb(:, w), chr_upsampling_weights, 8);
 end
 
-% figure;
 % imshow(frameY);
-% title('frameY');
 % figure;
 % imshow(frameCr);
-% title('frameCr');
 % figure;
 % imshow(frameCb);
-% title('frameCb');
 
 %% Convert the YCrCb to RGB
 
 for h = 1 : size(frameY, 1) % height
     for w = 1 : size(frameY, 2) % width
-        % We are using ceil(w/2) since the chromatic channels have the half
-        % width comparing to frameY, so we have to use the half amount of
-        % pels, but spread them to all of the luminance pels.
         R(h, w) = frameY(h, w) + 1.403 * (frameCr(h, ceil(w/2)) - 0.5);
         G(h, w) = frameY(h, w) - 0.344 * (frameCr(h, ceil(w/2)) - 0.5) - 0.714 * (frameCb(h, ceil(w/2)) - 0.5);
         B(h, w) = frameY(h, w) + 1.773 * (frameCb(h, ceil(w/2)) - 0.5);
@@ -138,7 +130,6 @@ title('G');
 figure;
 imshow(B);
 title('B');
-
 figure;
 imshow(frameRGB);
 title('RGB frame');
