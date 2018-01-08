@@ -1,5 +1,5 @@
-function [eMBY, eMBCr, eMBCb, mV] = motEstP(frameY, frameCr, frameCb, mBIndex, refFrameY, refFrameCr, refFrameCb)
-%MOTESTP estimates the move for P-frames
+function [eMBY, eMBCr, eMBCb,   mV] = motEstB(frameY, frameCr, frameCb, mBIndex, backwFrameY, backwFrameCr, backwFrameCb, forwFrameY, forwFrameCr, forwFrameCb)
+%MOTESTB estimates the move for P-frames
 % 2-D.6.2 Motion Estimation and Compensation in the documentation (p.80)
 % eMBY: 16x16 macroblock of estimation error -- luminance
 % eMBCr, eMBCb: 8x8 macroblock of estimation error -- chroma
