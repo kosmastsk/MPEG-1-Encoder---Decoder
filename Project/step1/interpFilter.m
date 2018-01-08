@@ -1,13 +1,10 @@
-function line = lumInterpFilter(line, weights, div)
+function line = interpFilter(line, weights, div)
 %INTERPFILTER This function applies an FIR filter, which is described by
 %the weights, to interpolate the values of a line of pels, after upsampling
 %it.
 % It applies to weights arrays with 7 values
-% div is the value that the weights should be divided with, with rounding
-% to the nearest integer, after finding the interpolated value
+% div is the value that the weights should be divided with
 
-% Upsample with an offset of 1
-%line = upsample(line, 2, 1);
 l = length(weights);
 %get the index of the middle pel
 middle = ceil(l/2);
@@ -43,7 +40,7 @@ for i = 1:length(line)
         end
 
         line(i) = (weights(middle-1) * (a + b) + weights(middle-3) * (c + d)); 
-        line(i) = ( line(i) / div);
+        line(i) = line(i) / div;
     end
 end
 

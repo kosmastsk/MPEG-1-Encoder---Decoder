@@ -12,6 +12,12 @@ R = frameRGB(:,:,1) ; % Red channel
 G = frameRGB(:,:,2) ; % Green channel
 B = frameRGB(:,:,3) ; % Blue channel
 
+% initialize the output arrays in uint8 format
+frameY = uint8(zeros(size(frameRGB(:,:,1))));
+frameCr = uint8(zeros(size(frameY(:,:),1), size(frameY(:,:),2) / 2)); %the Cr Cb frames have the half number of pixels per row
+frameCb = uint8(zeros(size(frameY(:,:),1), size(frameY(:,:),2) / 2));
+
+
 %% Convert the values from RGB to YCrCb pixels
 
 frameY = uint8(floor(77*R + 150*G + 29*B));
@@ -47,7 +53,7 @@ lum_tap_weights = [-29, 0, 88, 138, 88, 0, -29]; % //256
 
 %% Chrominance Subsampling Filter Tap Weights
 
-chr_tap_weights = [1, 0, 3, 0, 3, 0, 1]; % //8
+chr_tap_weights = [1, 0, 3, , 3, 0, 1]; % //8
 
 %% Horizontal Filter and subsample
 
@@ -59,6 +65,10 @@ for w = 1 : size(frameCr, 2)
     frameCr(:, w) = FIRfilter(frameCr(:, w), chr_tap_weights, 8);
     frameCb(:, w) = FIRfilter(frameCb(:, w), chr_tap_weights, 8);
 end
+
+% frameY = imfilter(frameY', lum_tap_weights); % transpose to apply the filter horizontally
+% frameCr = imfilter(frameCr', chr_tap_weights);
+% frameCb = imfilter(frameCb', chr_tap_weights);
 
 frameY = frameY(: , 1:2:end);
 frameCr = frameCr(: , 1:2:end);
@@ -83,8 +93,15 @@ for h = 1 : size(frameCr, 1)
     frameCb(h, :) = FIRfilter(frameCb(h, :), chr_tap_weights, 8);
 end
 
-frameCr = downsample(frameCr, 2); 
+frameCr = downsample(frameCr, 2); % transpose again to bring it in the initial format
 frameCb = downsample(frameCb, 2);
+
+% frameCr = imfilter(frameCr', chr_tap_weights);
+% frameCb = imfilter(frameCb', chr_tap_weights);
+% 
+% frameCr = downsample(frameCr, 2); % transpose again to bring it in the initial format
+% frameCb = downsample(frameCb, 2);
+% frameY = frameY';
 
 %% Hopefully SIF resolution is done
 %% Plots and testing

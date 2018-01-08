@@ -34,15 +34,10 @@ for k = 1 : 1% length(images) % Change to 1 if we want to run for one image
 
 %     Convert the image to YCrCb
     [frameY, frameCr, frameCb] = ccir2ycrcb(image);
-
-%     dummy display: downsample frameY, so that we can display the image created with the
-%     cat function, and just take a look on our result
-%     frameY = frameY(1:2:end, 1:2:end);
-%     imshow(cat(3, frameY, frameCr, frameCb));
    
 %     Inverse function
     frameRGB = ycrcb2ccir(frameY, frameCr, frameCb);
-%     imshow(frameRGB);
+
 end
 
 %% Motion Estimator

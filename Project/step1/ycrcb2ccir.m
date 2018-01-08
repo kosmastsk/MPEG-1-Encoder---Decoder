@@ -14,20 +14,13 @@ G = double(zeros(576, 720));
 B = double(zeros(576, 720));
 frameRGB = double(zeros(576, 720, 3));
 
-switch class(frameY)
-case 'uint8' 
-    frameY = im2double(frameY);
-    frameCr = im2double(frameCr);
-    frameCb = im2double(frameCb);
-case 'double' 
-    frameY = 255 * frameY;
-    frameCr = 255 * frameCr;
-    frameCb = 255 * frameCb;
-end 
+frameY = im2double(frameY);
+frameCr = im2double(frameCr);
+frameCb = im2double(frameCb);
 
 lum_upsampling_weights = [-12, 0, 140, 256, 140, 0, -12];
  
-chr_upsampling_weights = [1, 0, 3, 8, 3, 0, 1];
+chr_upsampling_weights = [1, 0, 3, 0, 3, 0, 1];
 
 %% Vertical Upsampling Filter for chrominance SIF
 
@@ -38,8 +31,8 @@ frameCb = upsample(frameCb, 2, 1);
 % Use interpolation to calculate the values of the zero pels that occured
 % with the upsampling
 for w = 1 : size(frameCr, 2)
-    frameCr(:, w) = lumInterpFilter(frameCr(:, w), chr_upsampling_weights, 8);
-    frameCb(:, w) = lumInterpFilter(frameCb(:, w), chr_upsampling_weights, 8);
+    frameCr(:, w) = interpFilter(frameCr(:, w), chr_upsampling_weights, 8);
+    frameCb(:, w) = interpFilter(frameCb(:, w), chr_upsampling_weights, 8);
 end
 
 % figure;
@@ -57,19 +50,19 @@ end
 frameY = upsample(frameY', 2); % transpose the matrix to use the same function but upsample to the other direction
 frameY = frameY'; % recover the matrix to the original state but upsampled properly
 
-% Same procedure for chromatic channels
+% Same procedure for chrominance channels
 frameCr = upsample(frameCr', 2);
 frameCb = upsample(frameCb', 2);
 frameCr = frameCr';
 frameCb = frameCb';
 
 for h = 1 : size(frameY, 1)
-    frameY(h, :) = lumInterpFilter(frameY(h, :), lum_upsampling_weights, 256);
+    frameY(h, :) = interpFilter(frameY(h, :), lum_upsampling_weights, 256);
 end
 
 for h = 1 : size(frameCr, 1)
-    frameCr(h, :) = lumInterpFilter(frameCr(h, :), chr_upsampling_weights, 8);
-    frameCb(h, :) = lumInterpFilter(frameCb(h, :), chr_upsampling_weights, 8);
+    frameCr(h, :) = interpFilter(frameCr(h, :), chr_upsampling_weights, 8);
+    frameCb(h, :) = interpFilter(frameCb(h, :), chr_upsampling_weights, 8);
 end
 
 % figure;
@@ -92,12 +85,12 @@ frameCb = upsample(frameCb, 2, 1);
 % Use interpolation to calculate the values of the zero pels that occured
 % with the upsampling
 for w = 1 : size(frameY, 2)
-    frameY(:, w) = lumInterpFilter(frameY(:, w), lum_upsampling_weights, 256);
+    frameY(:, w) = interpFilter(frameY(:, w), lum_upsampling_weights, 256);
 end
 
 for w = 1 : size(frameCr, 2)
-    frameCr(:, w) = lumInterpFilter(frameCr(:, w), chr_upsampling_weights, 8);
-    frameCb(:, w) = lumInterpFilter(frameCb(:, w), chr_upsampling_weights, 8);
+    frameCr(:, w) = interpFilter(frameCr(:, w), chr_upsampling_weights, 8);
+    frameCb(:, w) = interpFilter(frameCb(:, w), chr_upsampling_weights, 8);
 end
 
 % figure;
@@ -129,15 +122,15 @@ frameRGB(:,:,3) = B;
 
 %% Testing and ploting - Hope it works
 
-figure;
-imshow(R);
-title('R');
-figure;
-imshow(G);
-title('G');
-figure;
-imshow(B);
-title('B');
+% figure;
+% imshow(R);
+% title('R');
+% figure;
+% imshow(G);
+% title('G');
+% figure;
+% imshow(B);
+% title('B');
 
 figure;
 imshow(frameRGB);
