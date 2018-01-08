@@ -9,7 +9,7 @@ function [mBY, mBCr, mBCb] = iMotEstP(eMBY, eMBCr, eMBCb, mBIndex, mV, refFrameY
 
 MBYSize = 16; % Macroblock size for Y frame
 MBCSize = 8; % Macroblock size for chroma frames
-w = 2; % Search parameter 
+%w = 7; % Search parameter 
 [numberOfRows, numberOfCols] = size(refFrameY);
 
 %% Since we have the MB index, we need to calculate where it is in the frame
@@ -20,7 +20,7 @@ c = mod(mBIndex, numberOfCols / 16) ; % find the column
 
 % Translate the row and column into actual pixel index values from the original frame
 % MBY = zeros(MBYSize, MBYSize);
-mV
+
 frameRow = h*MBYSize + 1 : h*MBYSize + MBYSize;
 frameCol = c*MBYSize + 1 : c*MBYSize + MBYSize;
 
@@ -60,3 +60,7 @@ refMBCb = refFrameCb(frameRowChr, frameColChr);
 mBY = refMBY + eMBY;
 mBCr = refMBCr + eMBCr;
 mBCb = refMBCb + eMBCb;
+
+% figure;
+% imshow(mBY)
+% title(['Macroblock ' num2str(mBIndex) '- Y channel after inverse motion estimation- coastguard001.tiff']);

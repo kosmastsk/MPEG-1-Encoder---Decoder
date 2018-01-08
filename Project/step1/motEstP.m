@@ -16,12 +16,12 @@ function [eMBY, eMBCr, eMBCb, mV] = motEstP(frameY, frameCr, frameCb, mBIndex, r
 
 MBYSize = 16; % Macroblock size for Y channels
 MBCSize = 8; % Macroblock size for chroma channels
-w = 2; % Search parameter 
+w = 7; % Search parameter 
 [numberOfRows, numberOfCols] = size(frameY);
 
 % array to save the cost from each macroblock we check
 % later on we will find the minimum of it
-costs = ones(2*w + 1, 2*w +1) * 99999;
+costs = ones(2*w + 1, 2*w +1) * 1;
 
 % output arguments
 mV = [NaN NaN; NaN NaN]; 
@@ -37,19 +37,19 @@ c = mod(mBIndex, numberOfCols / 16) ; % find the column
 
 % Translate the row and column into actual pixel index values from the original frame
 % MBY = zeros(MBYSize, MBYSize);
-frameRow = h*MBYSize + 1 : h*MBYSize + MBYSize;
-frameCol = c*MBYSize + 1 : c*MBYSize + MBYSize;
+frameRow = (h*MBYSize + 1) : (h*MBYSize + MBYSize);
+frameCol = (c*MBYSize + 1) : (c*MBYSize + MBYSize);
 
-frameRowChr = h*MBCSize + 1 : h*MBCSize + MBCSize;
-frameColChr = c*MBCSize + 1 : c*MBCSize + MBCSize;
+frameRowChr = (h*MBCSize + 1) : (h*MBCSize + MBCSize);
+frameColChr = (c*MBCSize + 1) : (c*MBCSize + MBCSize);
 
 MBY = frameY(frameRow , frameCol); % Extract only the macroblock we care for, from the original frame
 MBCr = frameCr(frameRowChr, frameColChr); % Get the chroma pels to calculate the error later
 MBCb = frameCb(frameRowChr, frameColChr);
-
-figure;
-imshow(MBY);
-title('Macroblock 0 - Y channel - coastguard003.tiff');
+% 
+% figure;
+% imshow(MBY);
+% title(['Macroblock ' num2str(mBIndex) '- Y channel - coastguard003.tiff']);
 
 % If we didn't have the index, the loop would be like this -->
 % for h = 1 : MBSize : numberOfRows-MBSize+1 % height
@@ -92,7 +92,7 @@ for k = 1 : 2*w + 1
 end
 
 % Set the motion Vector and the error that will be encoded and returned
-mV(: , 1) = [minY - w - 1, minX - w - 1]
+mV(: , 1) = [minY - w - 1, minX - w - 1];
 
 % E = MBY - macroblock withe min cost;
 % If it tries to attempt a pel which is less than 1, it uses 1, so that it
@@ -109,9 +109,9 @@ chroma_row(chroma_row < 1) = 1;
 chroma_col(chroma_col > numberOfCols / 2) = numberOfCols / 2;
 chroma_col(chroma_col < 1) = 1;
 
-figure;
-imshow(refFrameY(max(1, frameRow + minY - w - 1), max(1, frameCol + minX - w - 1)));
-title('the part of the image chosen using motEstP from coastguard001.tiff');
+% figure;
+% imshow(refFrameY(max(1, frameRow + minY - w - 1), max(1, frameCol + minX - w - 1)));
+% title('the part of the image chosen using motEstP from coastguard001.tiff');
 
 eMBY = MBY - refFrameY(max(1, frameRow + minY - w - 1), max(1, frameCol + minX - w - 1));
 eMBCr = MBCr - refFrameCr(chroma_row, chroma_col);
