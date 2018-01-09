@@ -9,7 +9,6 @@ function [mBY, mBCr, mBCb] = iMotEstP(eMBY, eMBCr, eMBCb, mBIndex, mV, refFrameY
 
 MBYSize = 16; % Macroblock size for Y frame
 MBCSize = 8; % Macroblock size for chroma frames
-%w = 7; % Search parameter 
 [numberOfRows, numberOfCols] = size(refFrameY);
 
 %% Since we have the MB index, we need to calculate where it is in the frame

@@ -1,16 +1,15 @@
 function [mBY, mBCr, mBCb] = iMotEstB(eMBY, eMBCr, eMBCb, mBIndex, mV, backwFrameY, backwFrameCr, backwFrameCb, forwFrameY, forwFrameCr, forwFrameCb)
-% IMOTESTP is the inverse function of motEstP 
-% as input it get the error macroblocks, the reference frame and the motion
+% IMOTESTB is the inverse function of motEstB
+% as input it get the error macroblocks, the reference frames and the motion
 % vector, and the output is the reconstructed macroblock
 
-% disp('Hello from imotEstP');
+% disp('Hello from imotEstB');
 
 %% Initialization
 
 MBYSize = 16; % Macroblock size for Y frame
 MBCSize = 8; % Macroblock size for chroma frames
-w = 2; % Search parameter 
-[numberOfRows, numberOfCols] = size(refFrameY);
+[numberOfRows, numberOfCols] = size(backwFrameY);
 
 %% Since we have the MB index, we need to calculate where it is in the frame
 % Calculate the indexing in rows and columns inside the frame of the macroblock
@@ -20,7 +19,7 @@ c = mod(mBIndex, numberOfCols / 16) ; % find the column
 
 % Translate the row and column into actual pixel index values from the original frame
 % MBY = zeros(MBYSize, MBYSize);
-mV
+
 frameRow = h*MBYSize + 1 : h*MBYSize + MBYSize;
 frameCol = c*MBYSize + 1 : c*MBYSize + MBYSize;
 
@@ -28,35 +27,70 @@ frameCol = c*MBYSize + 1 : c*MBYSize + MBYSize;
 frameRowChr = h*MBCSize + 1 : h*MBCSize + MBCSize;
 frameColChr = c*MBCSize + 1 : c*MBCSize + MBCSize;
 
-% Use the motion vector to move the macroblock to the direction needed on
-% the reference frame
-frameRow = frameRow + mV(2,1); % Move up or down, depending on the value ( + or -)
-frameCol = frameCol + mV(1,1); % Move right or left, depending the value ( + or -)
+%% For the forward prediction
 
-frameRowChr = frameRowChr + mV(2,1); % Move up or down, depending on the value ( + or -)
-frameColChr = frameColChr + mV(1,1); % Move right or left, depending the value ( + or -)
+% Use the motion vector to move the macroblock to the direction needed on
+% the past frame
+forwFrameRow = frameRow + mV(2,1); % Move up or down, depending on the value ( + or -)
+forwFrameCol = frameCol + mV(1,1); % Move right or left, depending the value ( + or -)
+
+forwFrameRowChr = frameRowChr + mV(2,1); % Move up or down, depending on the value ( + or -)
+forwFrameColChr = frameColChr + mV(1,1); % Move right or left, depending the value ( + or -)
 
 % Avoid the case there the index goes negative or more than the image limit
-frameRow(frameRow < 1) = 1;
-frameRow(frameRow > numberOfRows) = numberOfRows;
+forwFrameRow(forwFrameRow < 1) = 1;
+forwFrameRow(forwFrameRow > numberOfRows) = numberOfRows;
 
-frameCol(frameCol < 1) = 1;
-frameCol(frameCol > numberOfCols) = 1;
+forwFrameCol(forwFrameCol < 1) = 1;
+forwFrameCol(forwFrameCol > numberOfCols) = 1;
 
-frameRowChr(frameRowChr < 1) = 1;
-frameRowChr(frameRowChr > numberOfRows / 2) = numberOfRows / 2;
+forwFrameRowChr(forwFrameRowChr < 1) = 1;
+forwFrameRowChr(forwFrameRowChr > numberOfRows / 2) = numberOfRows / 2;
 
-frameColChr(frameColChr < 1) = 1;
-frameColChr(frameColChr > numberOfCols / 2) = numberOfCols / 2;
+forwFrameColChr(forwFrameColChr < 1) = 1;
+forwFrameColChr(forwFrameColChr > numberOfCols / 2) = numberOfCols / 2;
 
 % We need to isolate the macroblock from the reference frame that will be
 % used for reconstructing the initial macroblock
-refMBY = refFrameY(frameRow, frameCol);
-refMBCr = refFrameCr(frameRowChr, frameColChr);
-refMBCb = refFrameCb(frameRowChr, frameColChr);
+forwMBY = forwFrameY(forwFrameRow, forwFrameCol);
+forwMBCr = forwFrameCr(forwFrameRowChr, forwFrameColChr);
+forwMBCb = forwFrameCb(forwFrameRowChr, forwFrameColChr);
 
-% Restore the initial macroblock using the following:
-% Block = Error + refBlock
-mBY = refMBY + eMBY;
-mBCr = refMBCr + eMBCr;
-mBCb = refMBCb + eMBCb;
+%% For the backward prediction
+
+% Use the motion vector to move the macroblock to the direction needed on
+% the future frame
+backwFrameRow = frameRow + mV(2,2); % Move up or down, depending on the value ( + or -)
+backwFrameCol = frameCol + mV(1,2); % Move right or left, depending the value ( + or -)
+
+backwFrameRowChr = frameRowChr + mV(2,2); % Move up or down, depending on the value ( + or -)
+backwFrameColChr = frameColChr + mV(1,2); % Move right or left, depending the value ( + or -)
+
+% Avoid the case there the index goes negative or more than the image limit
+backwFrameRow(backwFrameRow < 1) = 1;
+backwFrameRow(backwFrameRow > numberOfRows) = numberOfRows;
+
+backwFrameCol(backwFrameCol < 1) = 1;
+backwFrameCol(backwFrameCol > numberOfCols) = 1;
+
+backwFrameRowChr(backwFrameRowChr < 1) = 1;
+backwFrameRowChr(backwFrameRowChr > numberOfRows / 2) = numberOfRows / 2;
+
+backwFrameColChr(backwFrameColChr < 1) = 1;
+backwFrameColChr(backwFrameColChr > numberOfCols / 2) = numberOfCols / 2;
+
+% We need to isolate the macroblock from the reference frame that will be
+% used for reconstructing the initial macroblock
+backwMBY = backwFrameY(backwFrameRow, backwFrameCol);
+backwMBCr = backwFrameCr(backwFrameRowChr, backwFrameColChr);
+backwMBCb = backwFrameCb(backwFrameRowChr, backwFrameColChr);
+
+
+%% Restore the initial macroblock using the following:
+% Block = Error + 0.5 * (fordwBlock+backwBlock)
+mBY = eMBY + 0.5*(backwMBY + forwMBY);
+mBCr = eMBCr + 0.5*(backwMBCr + forwMBCr);
+mBCb = eMBCb + 0.5*(backwMBCb + forwMBCb);
+
+figure;
+imshow(mBY)

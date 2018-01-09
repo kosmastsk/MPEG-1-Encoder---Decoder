@@ -113,6 +113,7 @@ chroma_col(chroma_col < 1) = 1;
 % imshow(refFrameY(max(1, frameRow + minY - w - 1), max(1, frameCol + minX - w - 1)));
 % title('the part of the image chosen using motEstP from coastguard001.tiff');
 
+%% Calculate the error
 eMBY = MBY - refFrameY(max(1, frameRow + minY - w - 1), max(1, frameCol + minX - w - 1));
 eMBCr = MBCr - refFrameCr(chroma_row, chroma_col);
 eMBCb = MBCb - refFrameCb(chroma_row, chroma_col);
