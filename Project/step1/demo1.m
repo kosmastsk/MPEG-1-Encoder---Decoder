@@ -23,7 +23,7 @@ images = dir(filePattern);
 
 %% Preprocessing
 % % Read every image in the folder specified
-% for k = 1 : length(images) % Change to 1 if we want to run for one image
+% for k = 1 : 1%length(images) % Change to 1 if we want to run for one image
 %     baseFileName = images(k).name;
 %     fullFileName = fullfile(myFolder, baseFileName);
 %     fprintf(1, 'Now reading %s\n', fullFileName);
