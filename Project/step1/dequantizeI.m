@@ -15,7 +15,7 @@ function dctBlock = dequantizeI(qBlock, qTable, qScale)
 
 dctBlock = zeros(size(qBlock));
 
-dctBlock(1,1) = str2double(qBlock(1,1)) * 8;
+dctBlock(1,1) = (qBlock(1,1)) * 8;
 
 for i = 1 : size(qBlock, 1)
     for j = 1 : size(qBlock, 2)
@@ -23,6 +23,6 @@ for i = 1 : size(qBlock, 1)
             % This pel has already got a value - DC coeff
             continue;
         end
-        dctBlock(i, j) = (qScale * qTable(i, j) * str2double(qBlock(i, j))) / 8; % exactly the inverse procedure
+        dctBlock(i, j) = (qScale * qTable(i, j) * (qBlock(i, j))) / 8; % exactly the inverse procedure
     end
 end

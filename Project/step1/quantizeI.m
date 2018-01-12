@@ -22,8 +22,6 @@ for i = 1 : size(dctBlock, 1)
             % This pel has already got a value - DC coeff
             continue;
         end
-        qBlock(i, j) = num2str( fix( ( 8 * dctBlock(i, j)) / (qScale * qTable(i, j)) ) );
+        qBlock(i, j) = ( fix( ( 8 * dctBlock(i, j)) / (qScale * qTable(i, j)) ) );
     end
 end
-
-% Save the new matrix as a char, not a double
