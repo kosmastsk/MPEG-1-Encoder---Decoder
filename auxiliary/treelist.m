@@ -11,7 +11,7 @@
 %
 %   treelist varname1 varname2 .....
 %
-% (C) Copyright 2002 Peter Rydesäter, GNU General Public License.
+% (C) Copyright 2002 Peter Rydesï¿½ter, GNU General Public License.
 % 
 %
 % Se also:

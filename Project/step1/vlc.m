@@ -4,8 +4,6 @@ function vlcStream = vlc(runSymbols)
 % bits, encoded with variable length words
 % The encoding is using the codes included in the tables 2-D.15, 2-D.16 and
 % 2-D.17 in the MPEG-1 documentation, which are global variables
-% The function getTheGlobals is also used, to give us access to the
-% globally defined tables.
 % p. 92 in the documentation
 
 % Define the global variables to use them also in this file
@@ -15,17 +13,14 @@ global d16a;
 global d16b;
 global d17a;
 global d17b;
-global h;
-global h16;
-global h17;
 
 %% initialize
 vlcStream = '';
-
+getTheGlobals;
 %% Scan the symbols and change it to VLC codes
 R = length(runSymbols);
 for i = 1 : R
-    [Lia15, Loc15b] = ismember(abs(runSymbols(i, :)), d15a, 'rows');
+    [Lia15, Loc15b] = ismember(abs(runSymbols(i, :)), d15a, 'rows')
     
     % If it exists, add it to the VLC stream, otherwise we need to check
     % the escape sequence
@@ -45,13 +40,13 @@ for i = 1 : R
     % length and then the level, and append all of these values to the
     % stream
     if Lia15 == 0
-        vlcStream = strcat(vlcStream, '0000 01'); % escape code
+        vlcStream = strcat(vlcStream, '000001'); % escape code
         [Lia16, Loc16] = ismember(abs(runSymbols(i, 1)), d16a, 'rows');
         if Lia16 ~= 0
-            [Lia17, Loc17] = ismember(abs(runSymbols(i, 2)), d17a, 'rows');
+            [Lia17, Loc17] = ismember(abs(runSymbols(i, 2)), d17s, 'rows');
             if Lia17 ~= 0
-                vlcStream = strcat(vlcStream, d16b(Loc16));
-                vlcStream = strcat(vlcStream, d17b(Loc17));
+                vlcStream = strcat(vlcStream, d16b(Loc16), 'rows');
+                vlcStream = strcat(vlcStream, d17b(Loc17), 'rows');
             end
         end
     end
@@ -59,7 +54,6 @@ end
 % Add the EOB in the end of the stream to inform the decoder that there 
 %are no more quantized coefficients in the current 8 by 8 block
 vlcStream = strcat(vlcStream, '10'); % EOB
-        
-    
+
 end
 %% END
