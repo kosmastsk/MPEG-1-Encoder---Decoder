@@ -28,7 +28,7 @@ for i = 1 : R
     % the escape sequence
     if Lia15 ~= 0 
 %         vlcStream = strcat(vlcStream, d15b(Loc15b));
-        vlcStream(end+1) = cellstr(d15b(Loc15b))
+        vlcStream(end + 1) = cellstr(d15b(Loc15b));
         % Check if is positive or negative, so that we add the s value in
         % the end of the stream
         % 0 means a positive level and 1 means a negative level
@@ -43,13 +43,15 @@ for i = 1 : R
     % length and then the level, and append all of these values to the
     % stream
     if Lia15 == 0
-        vlcStream = strcat(vlcStream(end), '000001'); % escape code
+%         vlcStream = strcat(vlcStream(end), '000001'); % escape code
+        vlcStream(end + 1) = cellstr('000001');
         [Lia16, Loc16] = ismember(abs(runSymbols(i, 1)), d16a, 'rows');
         if Lia16 ~= 0
             [Lia17, Loc17] = ismember(abs(runSymbols(i, 2)), d17a, 'rows');
             if Lia17 ~= 0
 %                 vlcStream = strcat(vlcStream, d16b(Loc16));
-                vlcStream(end+1) = cellstr(d16b(Loc16));
+%                 vlcStream(end) = cellstr(d16b(Loc16));
+                vlcStream(end) = strcat(vlcStream(end), d16b(Loc16));
 %                 vlcStream = strcat(vlcStream, d17b(Loc17));
 %                 vlcStream(end+1) = cellstr(d17b(Loc17));
                 vlcStream(end) = strcat(vlcStream(end), d17b(Loc17));
@@ -61,6 +63,9 @@ end
 %are no more quantized coefficients in the current 8 by 8 block
 % vlcStream = strcat(vlcStream, '10'); % EOB
 vlcStream(end+1) = cellstr('10');
+
+% If we want the result as a concentrated string
+% vlcStream = cell2mat(vlcStream);
 
 end
 %% END
