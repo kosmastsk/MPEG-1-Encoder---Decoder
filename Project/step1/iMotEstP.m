@@ -18,7 +18,6 @@ h = fix(mBIndex / (numberOfCols / 16)); % find the row
 c = mod(mBIndex, numberOfCols / 16) ; % find the column
 
 % Translate the row and column into actual pixel index values from the original frame
-% MBY = zeros(MBYSize, MBYSize);
 
 frameRow = h*MBYSize + 1 : h*MBYSize + MBYSize;
 frameCol = c*MBYSize + 1 : c*MBYSize + MBYSize;

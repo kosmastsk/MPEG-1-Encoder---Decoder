@@ -64,18 +64,6 @@ frameY = frameY(: , 1:2:end);
 frameCr = frameCr(: , 1:2:end);
 frameCb = frameCb(: , 1:2:end);
 
-% figure;
-% imshow(frameY);
-% title('frame Y');
-% 
-% figure;
-% imshow(frameCr);
-% title('frame Cr');
-% 
-% figure;
-% imshow(frameCb);
-% title('frame Cb');
-
 %% Vertical Filter and subsample for frames Cr and Cb
 
 for h = 1 : size(frameCr, 1)
@@ -106,6 +94,7 @@ frameCb = downsample(frameCb, 2);
 % figure;
 % frameY = frameY(1:2:end, 1:2:end);
 % imshow(cat(3, frameY, frameCr, frameCb));
+% title('YCbCr image');
 
 end
 

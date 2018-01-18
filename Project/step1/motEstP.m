@@ -25,9 +25,6 @@ costs = ones(2*w + 1, 2*w +1) * 1;
 
 % output arguments
 mV = [NaN NaN; NaN NaN]; 
-% eMBY = zeros(MBYSize, MBYSize);
-% eMBCr = zeros(MBCSize, MBCSize);
-% eMBCb = zeros(MBCSize, MBCSize);
 
 %% Since we have the MB index, we need to calculate where it is in the frame
 % Calculate the indexing in rows and columns inside the frame of the macroblock
@@ -36,7 +33,6 @@ h = fix(mBIndex / (numberOfCols / 16)); % find the row
 c = mod(mBIndex, numberOfCols / 16) ; % find the column
 
 % Translate the row and column into actual pixel index values from the original frame
-% MBY = zeros(MBYSize, MBYSize);
 frameRow = (h*MBYSize + 1) : (h*MBYSize + MBYSize);
 frameCol = (c*MBYSize + 1) : (c*MBYSize + MBYSize);
 
@@ -46,17 +42,10 @@ frameColChr = (c*MBCSize + 1) : (c*MBCSize + MBCSize);
 MBY = frameY(frameRow , frameCol); % Extract only the macroblock we care for, from the original frame
 MBCr = frameCr(frameRowChr, frameColChr); % Get the chroma pels to calculate the error later
 MBCb = frameCb(frameRowChr, frameColChr);
-% 
-% figure;
-% imshow(MBY);
-% title(['Macroblock ' num2str(mBIndex) '- Y channel - coastguard003.tiff']);
 
-% If we didn't have the index, the loop would be like this -->
-% for h = 1 : MBSize : numberOfRows-MBSize+1 % height
-%     for w = 1 : MBSize : numberOfCols-MBSize+1 % width
-%       ...
-%     end
-% end
+figure;
+imshow(MBY);
+title(['Macroblock ' num2str(mBIndex) ' - Y channel - coastguard003.tiff']);
 
 %% We are using exhaustive search. This means that we will calculate the error from 2w+1 blocks in each direction
 
@@ -92,7 +81,7 @@ for k = 1 : 2*w + 1
 end
 
 % Set the motion Vector and the error that will be encoded and returned
-mV(: , 1) = [minY - w - 1, minX - w - 1];
+mV(: , 1) = [minY - w - 1, minX - w - 1]
 
 % E = MBY - macroblock withe min cost;
 % If it tries to attempt a pel which is less than 1, it uses 1, so that it

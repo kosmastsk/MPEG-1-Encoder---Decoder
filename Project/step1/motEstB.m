@@ -28,9 +28,6 @@ forwCosts = ones(2*w + 1, 2*w +1);
 
 % output arguments
 mV = [NaN NaN; NaN NaN];
-% eMBY = zeros(MBYSize, MBYSize);
-% eMBCr = zeros(MBCSize, MBCSize);
-% eMBCb = zeros(MBCSize, MBCSize);
 
 %% Since we have the MB index, we need to calculate where it is in the frame
 % Calculate the indexing in rows and columns inside the frame of the macroblock
@@ -39,7 +36,6 @@ h = fix(mBIndex / (numberOfCols / 16)); % find the row
 c = mod(mBIndex, numberOfCols / 16) ; % find the column
 
 % Translate the row and column into actual pixel index values from the original frame
-% MBY = zeros(MBYSize, MBYSize);
 frameRow = h*MBYSize + 1 : h*MBYSize + MBYSize;
 frameCol = c*MBYSize + 1 : c*MBYSize + MBYSize;
 
@@ -53,14 +49,6 @@ MBCb = frameCb(frameRowChr, frameColChr);
 figure;
 imshow(MBY);
 title('Macroblock 0 - Y channel - coastguard003.tiff');
-
-% If we didn't have the index, the loop would be like this -->
-% for h = 1 : MBSize : numberOfRows-MBSize+1 % height
-%     for w = 1 : MBSize : numberOfCols-MBSize+1 % width
-%       ...
-%     end
-% end
-
 
 %% For the forward prediction
 
@@ -168,7 +156,8 @@ backw_chroma_col(backw_chroma_col < 1) = 1;
 
 %% Calculate the error
 figure;
-imshow(backwFrameY(frameRow + backwMinY - w - 1, frameCol + backwMinX - w - 1))
+imshow(backwFrameY(frameRow + backwMinY - w - 1, frameCol + backwMinX - w - 1));
+
 eMBY = MBY - 0.5 * (backwFrameY(frameRow + backwMinY - w - 1, frameCol + backwMinX - w - 1) + forwFrameY(frameRow + forwMinY - w - 1, frameCol + forwMinX - w - 1));
 eMBCr = MBCr - 0.5 * (backwFrameCr(backw_chroma_row, backw_chroma_col) + forwFrameCr(forw_chroma_row, forw_chroma_col));
 eMBCb = MBCb - 0.5 * (backwFrameCb(backw_chroma_row, backw_chroma_col) + forwFrameCb(forw_chroma_row, forw_chroma_col));

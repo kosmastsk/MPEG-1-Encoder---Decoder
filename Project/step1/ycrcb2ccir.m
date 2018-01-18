@@ -131,9 +131,9 @@ frameRGB(:,:,3) = B;
 % figure;
 % imshow(B);
 % title('B');
-
-figure;
-imshow(frameRGB);
-title('RGB frame');
+% 
+% figure;
+% imshow(frameRGB);
+% title('RGB frame reconstructed');
 
 %% END

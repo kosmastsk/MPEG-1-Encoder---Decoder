@@ -14,7 +14,7 @@ function qBlock = quantizeI(dctBlock, qTable, qScale)
 % The quantizer step size for the DC coefficients is fixed at 8
 qBlock = zeros(size(dctBlock));
 
-qBlock(1,1) = num2str(fix(dctBlock(1,1) / 8));
+qBlock(1,1) = (fix(dctBlock(1,1) / 8));
 
 for i = 1 : size(dctBlock, 1)
     for j = 1 : size(dctBlock, 2)

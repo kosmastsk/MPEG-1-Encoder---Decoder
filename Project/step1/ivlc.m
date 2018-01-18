@@ -29,7 +29,7 @@ for i = 1 : L
     [exists15, location15] = ismember(without_sign, d15b);
     if (exists15) % If is exists in the d15b table just place the values and go on
         runSymbols(rsIndex, :) = d15a(location15, :);
-        if (vlc_mat(end) == '1')
+        if (vlc_mat(end) == '1') % Put the sign in the values if last bit is 1, otherwise do not change anything
             runSymbols(rsIndex, 2) = runSymbols(rsIndex, 2) * (-1);
         end
         rsIndex = rsIndex + 1;
@@ -37,7 +37,6 @@ for i = 1 : L
         % This means we found EOB, so function can return
         return
     else
-        disp('yaw')
         if (strcmp(vlc_mat(1:6), '000001')) %this means that an escape sequence was used and we have to search the other tables
             % check the first 6 digits, which are from the table d16b
             [exists16, location16] = ismember(vlc_mat(7:12), d16b);
@@ -45,10 +44,12 @@ for i = 1 : L
                 runSymbols(rsIndex, 1) = d16a(location16); % Write the first column(RUN EOB) and then search the other array for the LEVEL value
                 [exists17, location17] = ismember(vlc_mat(13:end), d17b);
                 if (exists17)
-                    runSymbols(rsIndex, 2) = d16a(location17);
+                    runSymbols(rsIndex, 2) = d17a(location17);
                 end
             end
             rsIndex = rsIndex + 1;
         end
     end
 end
+
+%% END

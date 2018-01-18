@@ -20,7 +20,8 @@ global d17a;
 global d17b;
 
 %% Scan the symbols and change it to VLC codes
-R = length(runSymbols);
+R = size(runSymbols, 1);
+% R = length(runSymbols)
 for i = 1 : R
     [Lia15, Loc15b] = ismember(abs(runSymbols(i, :)), d15a, 'rows');
     

@@ -11,11 +11,20 @@ function qBlock = iRunLength(runSymbols)
 % qBlock's size is 8x8, since this is the the block we apply the DCT
 % transform earlier. So the array we want to create is of size 8x8 = 64.
 
-qBlockSize = [8, 8];
+% Calculate the number of elements on the array, which is equal to the
+% number of preceding zeros plus the number of quant symbols.
+numElems = sum(runSymbols(:,1)) + size(runSymbols, 1);
+% If that number is less or equal to 64, then we have 8x8 array, else is a
+% Y channel, so 16x16
+if numElems <= 64 
+    qBlockSize = [8,8];
+else
+    qBlockSize = [16, 16];
+end
 
 irle = zeros(1, qBlockSize(1) * qBlockSize(2));
 irle_index = 1;
-R = length(runSymbols);
+R = size(runSymbols, 1);
 
 for r = 1 : R
     for cz = 1 : runSymbols(r, 1)

@@ -11,11 +11,6 @@ function runSymbols = runLength(qBlock)
 
 [row, col]=size(qBlock);
 
-% if (row~=col)
-%     disp('runSymbols failed because qBlock is not in square format');
-%     return;
-% end;
-
 % zz will store the zig-zag format of the matrix
 zz = zeros(row*col,1);
 
