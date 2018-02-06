@@ -66,7 +66,7 @@ end
 vlcStream(end+1) = cellstr('10');
 
 % If we want the result as a concentrated string
-% vlcStream = cell2mat(vlcStream);
+vlcStream = cell2mat(vlcStream);
 
 end
 %% END

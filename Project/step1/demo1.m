@@ -73,7 +73,7 @@ frameY = frameY(:, 5:356);
 frameCr = frameCr(:, 3:178);
 
 frameCb = frameCb(:, 3:178);
-  
+
 % The number of 16x16 macroblocks that can fit our image
 max_mBIndex = floor(size(frameY, 1) / 16) * floor(size(frameY, 2) / 16);
 
