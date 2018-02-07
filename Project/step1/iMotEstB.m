@@ -91,5 +91,5 @@ mBY = eMBY + 0.5*(backwMBY + forwMBY);
 mBCr = eMBCr + 0.5*(backwMBCr + forwMBCr);
 mBCb = eMBCb + 0.5*(backwMBCb + forwMBCb);
 
-figure;
-imshow(mBY)
+% figure;
+% imshow(mBY)

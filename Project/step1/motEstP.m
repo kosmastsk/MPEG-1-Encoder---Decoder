@@ -81,7 +81,7 @@ for k = 1 : 2*w + 1
 end
 
 % Set the motion Vector and the error that will be encoded and returned
-mV(: , 1) = [minY - w - 1, minX - w - 1]
+mV(: , 1) = [minY - w - 1, minX - w - 1];
 
 % E = MBY - macroblock withe min cost;
 % If it tries to attempt a pel which is less than 1, it uses 1, so that it
@@ -98,9 +98,9 @@ chroma_row(chroma_row < 1) = 1;
 chroma_col(chroma_col > numberOfCols / 2) = numberOfCols / 2;
 chroma_col(chroma_col < 1) = 1;
 
-% figure;
-% imshow(refFrameY(max(1, frameRow + minY - w - 1), max(1, frameCol + minX - w - 1)));
-% title('the part of the image chosen using motEstP from coastguard001.tiff');
+figure;
+imshow(refFrameY(max(1, frameRow + minY - w - 1), max(1, frameCol + minX - w - 1)));
+title('the part of the image chosen using motEstP from coastguard001.tiff');
 
 %% Calculate the error
 eMBY = MBY - refFrameY(max(1, frameRow + minY - w - 1), max(1, frameCol + minX - w - 1));

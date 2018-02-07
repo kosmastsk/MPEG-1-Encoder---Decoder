@@ -2,7 +2,7 @@ function [frameY, frameCr, frameCb] = ccir2ycrcb(frameRGB)
 %CCIR2YCRCB Create a sequence of images 352x288 in YCrCb 4:2:0
 %   2-D.3.1 in MPEG video documentation (p. 57)
 
-disp('Hello from ccir2ycrrb function\n');
+% disp('Hello from ccir2ycrrb function\n');
 %% Initialize
 % frameRGB is 576x720x3 struct
 
